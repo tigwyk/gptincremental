@@ -99,7 +99,8 @@
     <h2>Upgrades</h2>
     <p>Upgrade Cost: <span id="upgrade-cost">50</span> Credits</p>
     <button id="upgrade-btn">Upgrade Manufacturing Efficiency</button>
-    <button id="auto-sell-btn">Auto-sell Chips (Cost: 100 Credits)</button>
+    <input type="checkbox" id="auto-sell-checkbox">
+    <label for="auto-sell-checkbox">Auto-sell Chips (Cost: 100 Credits)</label>
 
     <div id="toast-container"></div>
     <div id="status-bar"></div>
@@ -149,7 +150,7 @@
         const shopCostDisplay = document.getElementById('shop-cost');
         const bigShopCostDisplay = document.getElementById('big-shop-cost');
         const upgradeCostDisplay = document.getElementById('upgrade-cost');
-        const autoSellButton = document.getElementById('auto-sell-btn');
+        const autoSellCheckbox = document.getElementById('auto-sell-checkbox');
         const statusBar = document.getElementById('status-bar');
         const clearStorageButton = document.getElementById('clear-storage-btn');
         const buyShopButton = document.getElementById('buy-shop-btn');
@@ -167,7 +168,7 @@
             shopCostDisplay.textContent = shopCost;
             bigShopCostDisplay.textContent = bigShopCost;
             upgradeCostDisplay.textContent = manufacturingEfficiencyUpgradeCost;
-            autoSellButton.textContent = `Auto-sell Chips (Cost: 100 Credits) - ${autoSellEnabled ? 'Enabled' : 'Disabled'}`;
+            autoSellCheckbox.checked = autoSellEnabled;
         }
 
         // Function to update chips and chips per second
@@ -329,16 +330,10 @@
             }
         });
 
-
         // Function to enable/disable auto-selling of chips
-        autoSellButton.addEventListener('click', function() {
-            if (credits >= 100) {
-                credits -= 100;
-                autoSellEnabled = !autoSellEnabled;
-                updateDisplay();
-            } else {
-                showToast('Not enough credits to purchase auto-sell upgrade!');
-            }
+        autoSellCheckbox.addEventListener('change', function() {
+            autoSellEnabled = this.checked;
+            updateDisplay();
         });
 
         // Function to clear local storage and reset game progress
