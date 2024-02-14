@@ -69,6 +69,7 @@
             lineCost = parsedData.lineCost;
             centerCost = parsedData.centerCost;
             manufacturingEfficiencyUpgradeCost = parsedData.manufacturingEfficiencyUpgradeCost;
+            updateDisplay();
         }
 
         const produceButton = document.getElementById('produce-btn');
@@ -80,15 +81,20 @@
         const upgradeCostDisplay = document.getElementById('upgrade-cost');
         const statusBar = document.getElementById('status-bar');
 
+        // Function to update display
+        function updateDisplay() {
+            chipsDisplay.textContent = chips.toFixed(2);
+            chipsPerSecDisplay.textContent = (chipsPerSec * manufacturingEfficiencyMultiplier).toFixed(2);
+            plantCostDisplay.textContent = plantCost;
+            lineCostDisplay.textContent = lineCost;
+            centerCostDisplay.textContent = centerCost;
+            upgradeCostDisplay.textContent = manufacturingEfficiencyUpgradeCost;
+        }
+
         // Function to update chips and chips per second
         function updateChips() {
             chips += chipsPerSec;
             chipsDisplay.textContent = chips.toFixed(2);
-        }
-
-        // Function to update the chips per second display
-        function updateChipsPerSecDisplay() {
-            chipsPerSecDisplay.textContent = (chipsPerSec * manufacturingEfficiencyMultiplier).toFixed(2);
         }
 
         // Function to save game progress
@@ -162,11 +168,7 @@
                     default:
                         break;
                 }
-                updateChipsPerSecDisplay();
-                chipsDisplay.textContent = chips.toFixed(2);
-                plantCostDisplay.textContent = plantCost;
-                lineCostDisplay.textContent = lineCost;
-                centerCostDisplay.textContent = centerCost;
+                updateDisplay();
             } else {
                 alert('Not enough chips!');
             }
@@ -182,9 +184,7 @@
             if (chips >= manufacturingEfficiencyUpgradeCost) {
                 chips -= manufacturingEfficiencyUpgradeCost;
                 manufacturingEfficiencyMultiplier *= 2;
-                updateChipsPerSecDisplay();
-                chipsDisplay.textContent = chips.toFixed(2);
-                upgradeCostDisplay.textContent = manufacturingEfficiencyUpgradeCost *= 2;
+                updateDisplay();
             } else {
                 alert('Not enough chips to upgrade!');
             }
