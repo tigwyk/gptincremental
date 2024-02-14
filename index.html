@@ -105,8 +105,6 @@
     <p>Upgrade Cost: <span id="upgrade-cost">50</span> Credits</p>
     <button id="upgrade-btn">Upgrade Manufacturing Efficiency</button>
 
-    <button id="auto-sell-btn">Purchase Auto-sell Upgrade (Cost: 100 Credits)</button>
-
     <div id="auto-sell-checkbox-container">
         <input type="checkbox" id="auto-sell-checkbox">
         <label for="auto-sell-checkbox">Auto-sell Chips</label>
@@ -160,7 +158,7 @@
         const shopCostDisplay = document.getElementById('shop-cost');
         const bigShopCostDisplay = document.getElementById('big-shop-cost');
         const upgradeCostDisplay = document.getElementById('upgrade-cost');
-        const autoSellCheckboxContainer = document.getElementById('auto-sell-checkbox-container');
+        const autoSellCheckbox = document.getElementById('auto-sell-checkbox');
         const statusBar = document.getElementById('status-bar');
         const clearStorageButton = document.getElementById('clear-storage-btn');
         const buyShopButton = document.getElementById('buy-shop-btn');
@@ -181,7 +179,8 @@
 
             // Show auto-sell checkbox if auto-sell upgrade is purchased
             if (autoSellEnabled) {
-                autoSellCheckboxContainer.style.display = 'block';
+                autoSellCheckbox.checked = true;
+                autoSellCheckbox.disabled = false;
             }
         }
 
@@ -345,15 +344,10 @@
         });
 
         // Function to enable/disable auto-selling of chips
-        function enableAutoSell() {
-            if (credits >= 100) {
-                credits -= 100;
-                autoSellEnabled = true;
-                updateDisplay();
-            } else {
-                showToast('Not enough credits to purchase auto-sell upgrade!');
-            }
-        }
+        document.getElementById('auto-sell-checkbox').addEventListener('change', function() {
+            autoSellEnabled = this.checked;
+            updateDisplay();
+        });
 
         // Function to clear local storage and reset game progress
         clearStorageButton.addEventListener('click', function() {
@@ -390,23 +384,10 @@
 
         // Check if auto-sell upgrade is purchased, then show checkbox
         if (autoSellEnabled) {
-            autoSellCheckboxContainer.style.display = 'block';
+            autoSellCheckbox.checked = true;
+            autoSellCheckbox.disabled = false;
         }
 
-        // Add event listener for enabling auto-sell
-        document.getElementById('auto-sell-checkbox').addEventListener('change', function() {
-            if (this.checked) {
-                enableAutoSell();
-            } else {
-                autoSellEnabled = false;
-                updateDisplay();
-            }
-        });
-
-        // Function to purchase auto-sell upgrade
-        document.getElementById('auto-sell-btn').addEventListener('click', function() {
-            enableAutoSell();
-        });
     </script>
 </body>
 </html>
