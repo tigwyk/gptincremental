@@ -79,6 +79,7 @@
         let plantCost = 10;
         let lineCost = 20;
         let centerCost = 30;
+        let productionInterval;
 
         // Load saved data from local storage
         const savedData = localStorage.getItem('chipGameSave');
@@ -165,6 +166,15 @@
             }
         });
 
+        // Function to automatically produce chips per second
+        function produceChipsPerSec() {
+            chips += chipsPerSec * manufacturingEfficiencyMultiplier;
+            chipsDisplay.textContent = chips.toFixed(2);
+        }
+
+        // Start producing chips per second
+        productionInterval = setInterval(produceChipsPerSec, 1000);
+
         // Add a chip manufacturing facility
         function addFacility(facilityType) {
             let facilityCost;
@@ -199,6 +209,8 @@
                     default:
                         break;
                 }
+                clearInterval(productionInterval); // Clear previous interval
+                productionInterval = setInterval(produceChipsPerSec, 1000); // Restart production interval
                 updateDisplay();
             } else {
                 alert('Not enough credits!');
