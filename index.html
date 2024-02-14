@@ -8,6 +8,19 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
+            position: relative;
+            height: 100%;
+        }
+
+        #status-bar {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: none;
         }
     </style>
 </head>
@@ -33,6 +46,8 @@
     <h2>Upgrades</h2>
     <p>Upgrade Cost: <span id="upgrade-cost">50</span> Chips</p>
     <button id="upgrade-btn">Upgrade Manufacturing Efficiency</button>
+
+    <div id="status-bar"></div>
 
     <script>
         let chips = 0;
@@ -63,6 +78,7 @@
         const lineCostDisplay = document.getElementById('line-cost');
         const centerCostDisplay = document.getElementById('center-cost');
         const upgradeCostDisplay = document.getElementById('upgrade-cost');
+        const statusBar = document.getElementById('status-bar');
 
         // Function to update chips and chips per second
         function updateChips() {
@@ -87,6 +103,11 @@
                 manufacturingEfficiencyUpgradeCost
             };
             localStorage.setItem('chipGameSave', JSON.stringify(gameData));
+            statusBar.textContent = 'Autosaving...';
+            statusBar.style.display = 'block';
+            setTimeout(() => {
+                statusBar.style.display = 'none';
+            }, 1500); // Hide status bar after 1.5 seconds
         }
 
         // Autosave game progress every 30 seconds
