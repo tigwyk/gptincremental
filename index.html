@@ -184,6 +184,7 @@
             if (chips >= manufacturingEfficiencyUpgradeCost) {
                 chips -= manufacturingEfficiencyUpgradeCost;
                 manufacturingEfficiencyMultiplier *= 2;
+                manufacturingEfficiencyUpgradeCost *= 2;
                 updateDisplay();
             } else {
                 alert('Not enough chips to upgrade!');
