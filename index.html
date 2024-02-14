@@ -71,6 +71,24 @@
     <div id="sidebar">
         <h2>Options</h2>
         <button id="clear-storage-btn">Clear Storage</button>
+        <hr>
+        <h2>Building & Upgrade Count</h2>
+        <p>Facilities:</p>
+        <ul id="building-count">
+            <li>Fabrication Plant: <span id="plant-count">0</span></li>
+            <li>Assembly Line: <span id="line-count">0</span></li>
+            <li>Quality Control Center: <span id="center-count">0</span></li>
+        </ul>
+        <p>Chip Selling Buildings:</p>
+        <ul id="chip-selling-count">
+            <li>Small Chip Shop: <span id="shop-count">0</span></li>
+            <li>Big Chip Shop: <span id="big-shop-count">0</span></li>
+        </ul>
+        <p>Upgrades:</p>
+        <ul id="upgrade-count">
+            <li>Manufacturing Efficiency: <span id="upgrade-multiplier">0</span></li>
+            <li>Auto-sell Upgrade: <span id="auto-sell-upgrade">Not Purchased</span></li>
+        </ul>
     </div>
 
     <h1>Chip Manufacturer - Incremental Idle Game</h1>
@@ -166,6 +184,13 @@
         const buyShopButton = document.getElementById('buy-shop-btn');
         const buyBigShopButton = document.getElementById('buy-big-shop-btn');
         const toastContainer = document.getElementById('toast-container');
+        const plantCountDisplay = document.getElementById('plant-count');
+        const lineCountDisplay = document.getElementById('line-count');
+        const centerCountDisplay = document.getElementById('center-count');
+        const shopCountDisplay = document.getElementById('shop-count');
+        const bigShopCountDisplay = document.getElementById('big-shop-count');
+        const upgradeMultiplierDisplay = document.getElementById('upgrade-multiplier');
+        const autoSellUpgradeDisplay = document.getElementById('auto-sell-upgrade');
 
         // Function to update display
         function updateDisplay() {
@@ -178,6 +203,15 @@
             shopCostDisplay.textContent = shopCost;
             bigShopCostDisplay.textContent = bigShopCost;
             upgradeCostDisplay.textContent = manufacturingEfficiencyUpgradeCost;
+
+            // Update building & upgrade count display
+            plantCountDisplay.textContent = chipsPerSec;
+            lineCountDisplay.textContent = chipsPerSec;
+            centerCountDisplay.textContent = chipsPerSec;
+            shopCountDisplay.textContent = sellingRate;
+            bigShopCountDisplay.textContent = sellingRate;
+            upgradeMultiplierDisplay.textContent = manufacturingEfficiencyMultiplier - 1; // Subtract 1 because base multiplier is 1
+            autoSellUpgradeDisplay.textContent = autoSellEnabled ? 'Purchased' : 'Not Purchased';
 
             // Show auto-sell checkbox if auto-sell upgrade is purchased
             if (autoSellEnabled) {
