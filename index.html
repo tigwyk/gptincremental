@@ -28,15 +28,17 @@
     <h1>Chip Manufacturer - Incremental Idle Game</h1>
     <p>Click the button to produce computer chips!</p>
     <p>Computer Chips: <span id="chips">0</span></p>
+    <p>Credits: <span id="credits">0</span></p>
     <p>Chips per second: <span id="chips-per-sec">0</span></p>
     <button id="produce-btn">Produce Chips</button>
+    <button id="sell-btn">Sell Chips</button>
 
     <hr>
 
     <h2>Manufacturing Facilities</h2>
-    <p>Fabrication Plant: Cost: <span id="plant-cost">10</span> Chips</p>
-    <p>Assembly Line: Cost: <span id="line-cost">20</span> Chips</p>
-    <p>Quality Control Center: Cost: <span id="center-cost">30</span> Chips</p>
+    <p>Fabrication Plant: Cost: <span id="plant-cost">10</span> Credits</p>
+    <p>Assembly Line: Cost: <span id="line-cost">20</span> Credits</p>
+    <p>Quality Control Center: Cost: <span id="center-cost">30</span> Credits</p>
     <button id="buy-plant-btn">Buy Fabrication Plant</button>
     <button id="buy-line-btn">Buy Assembly Line</button>
     <button id="buy-center-btn">Buy Quality Control Center</button>
@@ -44,13 +46,14 @@
     <hr>
 
     <h2>Upgrades</h2>
-    <p>Upgrade Cost: <span id="upgrade-cost">50</span> Chips</p>
+    <p>Upgrade Cost: <span id="upgrade-cost">50</span> Credits</p>
     <button id="upgrade-btn">Upgrade Manufacturing Efficiency</button>
 
     <div id="status-bar"></div>
 
     <script>
         let chips = 0;
+        let credits = 0;
         let chipsPerSec = 0;
         let manufacturingEfficiencyUpgradeCost = 50;
         let manufacturingEfficiencyMultiplier = 1;
@@ -63,6 +66,7 @@
         if (savedData) {
             const parsedData = JSON.parse(savedData);
             chips = parsedData.chips;
+            credits = parsedData.credits;
             chipsPerSec = parsedData.chipsPerSec;
             manufacturingEfficiencyMultiplier = parsedData.manufacturingEfficiencyMultiplier;
             plantCost = parsedData.plantCost;
@@ -73,7 +77,9 @@
         }
 
         const produceButton = document.getElementById('produce-btn');
+        const sellButton = document.getElementById('sell-btn');
         const chipsDisplay = document.getElementById('chips');
+        const creditsDisplay = document.getElementById('credits');
         const chipsPerSecDisplay = document.getElementById('chips-per-sec');
         const plantCostDisplay = document.getElementById('plant-cost');
         const lineCostDisplay = document.getElementById('line-cost');
@@ -84,6 +90,7 @@
         // Function to update display
         function updateDisplay() {
             chipsDisplay.textContent = chips.toFixed(2);
+            creditsDisplay.textContent = credits.toFixed(2);
             chipsPerSecDisplay.textContent = (chipsPerSec * manufacturingEfficiencyMultiplier).toFixed(2);
             plantCostDisplay.textContent = plantCost;
             lineCostDisplay.textContent = lineCost;
@@ -101,6 +108,7 @@
         function saveGame() {
             const gameData = {
                 chips,
+                credits,
                 chipsPerSec,
                 manufacturingEfficiencyMultiplier,
                 plantCost,
@@ -123,6 +131,18 @@
         produceButton.addEventListener('click', function() {
             chips += manufacturingEfficiencyMultiplier;
             chipsDisplay.textContent = chips.toFixed(2);
+        });
+
+        // Function to sell chips when the button is clicked
+        sellButton.addEventListener('click', function() {
+            if (chips >= 1) {
+                chips -= 1;
+                credits += 1;
+                chipsDisplay.textContent = chips.toFixed(2);
+                creditsDisplay.textContent = credits.toFixed(2);
+            } else {
+                alert('Not enough chips to sell!');
+            }
         });
 
         // Function to automatically produce chips per second
@@ -150,8 +170,8 @@
                 default:
                     break;
             }
-            if (chips >= facilityCost) {
-                chips -= facilityCost;
+            if (credits >= facilityCost) {
+                credits -= facilityCost;
                 switch (facilityType) {
                     case 1:
                         chipsPerSec += 1;
@@ -170,7 +190,7 @@
                 }
                 updateDisplay();
             } else {
-                alert('Not enough chips!');
+                alert('Not enough credits!');
             }
         }
 
@@ -181,13 +201,12 @@
 
         // Function to upgrade manufacturing efficiency
         document.getElementById('upgrade-btn').addEventListener('click', function() {
-            if (chips >= manufacturingEfficiencyUpgradeCost) {
-                chips -= manufacturingEfficiencyUpgradeCost;
+            if (credits >= manufacturingEfficiencyUpgradeCost) {
+                credits -= manufacturingEfficiencyUpgradeCost;
                 manufacturingEfficiencyMultiplier *= 2;
-                manufacturingEfficiencyUpgradeCost *= 2;
                 updateDisplay();
             } else {
-                alert('Not enough chips to upgrade!');
+                alert('Not enough credits to upgrade!');
             }
         });
     </script>
