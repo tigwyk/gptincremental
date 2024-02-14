@@ -322,11 +322,13 @@
             if (credits >= manufacturingEfficiencyUpgradeCost) {
                 credits -= manufacturingEfficiencyUpgradeCost;
                 manufacturingEfficiencyMultiplier *= 2;
+                manufacturingEfficiencyUpgradeCost *= 2; // Increase upgrade cost
                 updateDisplay();
             } else {
                 showToast('Not enough credits to upgrade!');
             }
         });
+
 
         // Function to enable/disable auto-selling of chips
         autoSellButton.addEventListener('click', function() {
