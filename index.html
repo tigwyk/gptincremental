@@ -43,6 +43,19 @@
         let lineCost = 20;
         let centerCost = 30;
 
+        // Load saved data from local storage
+        const savedData = localStorage.getItem('chipGameSave');
+        if (savedData) {
+            const parsedData = JSON.parse(savedData);
+            chips = parsedData.chips;
+            chipsPerSec = parsedData.chipsPerSec;
+            manufacturingEfficiencyMultiplier = parsedData.manufacturingEfficiencyMultiplier;
+            plantCost = parsedData.plantCost;
+            lineCost = parsedData.lineCost;
+            centerCost = parsedData.centerCost;
+            manufacturingEfficiencyUpgradeCost = parsedData.manufacturingEfficiencyUpgradeCost;
+        }
+
         const produceButton = document.getElementById('produce-btn');
         const chipsDisplay = document.getElementById('chips');
         const chipsPerSecDisplay = document.getElementById('chips-per-sec');
@@ -61,6 +74,23 @@
         function updateChipsPerSecDisplay() {
             chipsPerSecDisplay.textContent = (chipsPerSec * manufacturingEfficiencyMultiplier).toFixed(2);
         }
+
+        // Function to save game progress
+        function saveGame() {
+            const gameData = {
+                chips,
+                chipsPerSec,
+                manufacturingEfficiencyMultiplier,
+                plantCost,
+                lineCost,
+                centerCost,
+                manufacturingEfficiencyUpgradeCost
+            };
+            localStorage.setItem('chipGameSave', JSON.stringify(gameData));
+        }
+
+        // Autosave game progress every 30 seconds
+        setInterval(saveGame, 30000);
 
         // Function to produce chips when the button is clicked
         produceButton.addEventListener('click', function() {
