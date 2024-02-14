@@ -36,6 +36,30 @@
             border-radius: 5px;
             display: none;
         }
+
+        /* Toast Notification Styles */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            max-width: 300px;
+            z-index: 9999;
+        }
+
+        .toast {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -64,11 +88,20 @@
 
     <hr>
 
+    <h2>Chips Selling Buildings</h2>
+    <p>Small Chip Shop: Cost: <span id="shop-cost">50</span> Credits</p>
+    <p>Big Chip Shop: Cost: <span id="big-shop-cost">100</span> Credits</p>
+    <button id="buy-shop-btn">Buy Small Chip Shop</button>
+    <button id="buy-big-shop-btn">Buy Big Chip Shop</button>
+
+    <hr>
+
     <h2>Upgrades</h2>
     <p>Upgrade Cost: <span id="upgrade-cost">50</span> Credits</p>
     <button id="upgrade-btn">Upgrade Manufacturing Efficiency</button>
     <button id="auto-sell-btn">Auto-sell Chips (Cost: 100 Credits)</button>
 
+    <div id="toast-container"></div>
     <div id="status-bar"></div>
 
     <script>
@@ -80,8 +113,11 @@
         let plantCost = 10;
         let lineCost = 20;
         let centerCost = 30;
+        let shopCost = 50;
+        let bigShopCost = 100;
         let productionInterval;
         let autoSellEnabled = false;
+        let sellingRate = 0; // Chips sold per second
 
         // Load saved data from local storage
         const savedData = localStorage.getItem('chipGameSave');
@@ -94,8 +130,11 @@
             plantCost = parsedData.plantCost;
             lineCost = parsedData.lineCost;
             centerCost = parsedData.centerCost;
+            shopCost = parsedData.shopCost;
+            bigShopCost = parsedData.bigShopCost;
             manufacturingEfficiencyUpgradeCost = parsedData.manufacturingEfficiencyUpgradeCost;
             autoSellEnabled = parsedData.autoSellEnabled;
+            sellingRate = parsedData.sellingRate;
             updateDisplay();
         }
 
@@ -107,10 +146,15 @@
         const plantCostDisplay = document.getElementById('plant-cost');
         const lineCostDisplay = document.getElementById('line-cost');
         const centerCostDisplay = document.getElementById('center-cost');
+        const shopCostDisplay = document.getElementById('shop-cost');
+        const bigShopCostDisplay = document.getElementById('big-shop-cost');
         const upgradeCostDisplay = document.getElementById('upgrade-cost');
         const autoSellButton = document.getElementById('auto-sell-btn');
         const statusBar = document.getElementById('status-bar');
         const clearStorageButton = document.getElementById('clear-storage-btn');
+        const buyShopButton = document.getElementById('buy-shop-btn');
+        const buyBigShopButton = document.getElementById('buy-big-shop-btn');
+        const toastContainer = document.getElementById('toast-container');
 
         // Function to update display
         function updateDisplay() {
@@ -120,6 +164,8 @@
             plantCostDisplay.textContent = plantCost;
             lineCostDisplay.textContent = lineCost;
             centerCostDisplay.textContent = centerCost;
+            shopCostDisplay.textContent = shopCost;
+            bigShopCostDisplay.textContent = bigShopCost;
             upgradeCostDisplay.textContent = manufacturingEfficiencyUpgradeCost;
             autoSellButton.textContent = `Auto-sell Chips (Cost: 100 Credits) - ${autoSellEnabled ? 'Enabled' : 'Disabled'}`;
         }
@@ -140,15 +186,14 @@
                 plantCost,
                 lineCost,
                 centerCost,
+                shopCost,
+                bigShopCost,
                 manufacturingEfficiencyUpgradeCost,
-                autoSellEnabled
+                autoSellEnabled,
+                sellingRate
             };
             localStorage.setItem('chipGameSave', JSON.stringify(gameData));
-            statusBar.textContent = 'Autosaving...';
-            statusBar.style.display = 'block';
-            setTimeout(() => {
-                statusBar.style.display = 'none';
-            }, 1500); // Hide status bar after 1.5 seconds
+            showToast('Game autosaved');
         }
 
         // Autosave game progress every 30 seconds
@@ -168,7 +213,7 @@
                 chipsDisplay.textContent = chips.toFixed(2);
                 creditsDisplay.textContent = credits.toFixed(2);
             } else {
-                alert('Not enough chips to sell!');
+                showToast('Not enough chips to sell!');
             }
         });
 
@@ -225,7 +270,40 @@
                 productionInterval = setInterval(produceChipsPerSec, 1000); // Restart production interval
                 updateDisplay();
             } else {
-                alert('Not enough credits!');
+                showToast('Not enough credits!');
+            }
+        }
+
+        // Add a chip selling building
+        function addChipSellingBuilding(buildingType) {
+            let buildingCost;
+            switch (buildingType) {
+                case 1:
+                    buildingCost = shopCost;
+                    break;
+                case 2:
+                    buildingCost = bigShopCost;
+                    break;
+                default:
+                    break;
+            }
+            if (credits >= buildingCost) {
+                credits -= buildingCost;
+                switch (buildingType) {
+                    case 1:
+                        sellingRate += 1;
+                        shopCost *= 2;
+                        break;
+                    case 2:
+                        sellingRate += 2;
+                        bigShopCost *= 2;
+                        break;
+                    default:
+                        break;
+                }
+                updateDisplay();
+            } else {
+                showToast('Not enough credits!');
             }
         }
 
@@ -234,6 +312,10 @@
         document.getElementById('buy-line-btn').addEventListener('click', () => addFacility(2));
         document.getElementById('buy-center-btn').addEventListener('click', () => addFacility(3));
 
+        // Function to buy a chip selling building when the button is clicked
+        document.getElementById('buy-shop-btn').addEventListener('click', () => addChipSellingBuilding(1));
+        document.getElementById('buy-big-shop-btn').addEventListener('click', () => addChipSellingBuilding(2));
+
         // Function to upgrade manufacturing efficiency
         document.getElementById('upgrade-btn').addEventListener('click', function() {
             if (credits >= manufacturingEfficiencyUpgradeCost) {
@@ -241,7 +323,7 @@
                 manufacturingEfficiencyMultiplier *= 2;
                 updateDisplay();
             } else {
-                alert('Not enough credits to upgrade!');
+                showToast('Not enough credits to upgrade!');
             }
         });
 
@@ -252,7 +334,7 @@
                 autoSellEnabled = !autoSellEnabled;
                 updateDisplay();
             } else {
-                alert('Not enough credits to purchase auto-sell upgrade!');
+                showToast('Not enough credits to purchase auto-sell upgrade!');
             }
         });
 
@@ -266,8 +348,28 @@
             plantCost = 10;
             lineCost = 20;
             centerCost = 30;
+            shopCost = 50;
+            bigShopCost = 100;
+            sellingRate = 0;
             updateDisplay();
         });
+
+        // Function to display toast notifications
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 300);
+                }, 3000);
+            }, 100);
+        }
     </script>
 </body>
 </html>
