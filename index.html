@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Incremental Idle Game</title>
+    <title>Chip Manufacturer - Incremental Idle Game</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,130 +12,130 @@
     </style>
 </head>
 <body>
-    <h1>Incremental Idle Game</h1>
-    <p>Click the button to gather resources!</p>
-    <p>Resources: <span id="resources">0</span></p>
-    <p>Resource per second: <span id="resource-per-sec">0</span></p>
-    <button id="gather-btn">Gather Resources</button>
+    <h1>Chip Manufacturer - Incremental Idle Game</h1>
+    <p>Click the button to produce computer chips!</p>
+    <p>Computer Chips: <span id="chips">0</span></p>
+    <p>Chips per second: <span id="chips-per-sec">0</span></p>
+    <button id="produce-btn">Produce Chips</button>
 
     <hr>
 
-    <h2>Buildings</h2>
-    <p>Building Type 1: Cost: <span id="building1-cost">10</span> Resources</p>
-    <p>Building Type 2: Cost: <span id="building2-cost">20</span> Resources</p>
-    <p>Building Type 3: Cost: <span id="building3-cost">30</span> Resources</p>
-    <button id="buy-building1-btn">Buy Building Type 1</button>
-    <button id="buy-building2-btn">Buy Building Type 2</button>
-    <button id="buy-building3-btn">Buy Building Type 3</button>
+    <h2>Manufacturing Facilities</h2>
+    <p>Fabrication Plant: Cost: <span id="plant-cost">10</span> Chips</p>
+    <p>Assembly Line: Cost: <span id="line-cost">20</span> Chips</p>
+    <p>Quality Control Center: Cost: <span id="center-cost">30</span> Chips</p>
+    <button id="buy-plant-btn">Buy Fabrication Plant</button>
+    <button id="buy-line-btn">Buy Assembly Line</button>
+    <button id="buy-center-btn">Buy Quality Control Center</button>
 
     <hr>
 
     <h2>Upgrades</h2>
-    <p>Upgrade Cost: <span id="upgrade-cost">50</span> Resources</p>
-    <button id="upgrade-btn">Upgrade Resource Production Efficiency</button>
+    <p>Upgrade Cost: <span id="upgrade-cost">50</span> Chips</p>
+    <button id="upgrade-btn">Upgrade Manufacturing Efficiency</button>
 
     <script>
-        let resources = 0;
-        let resourcePerSec = 0;
-        let resourceEfficiencyUpgradeCost = 50;
-        let resourceEfficiencyMultiplier = 1;
-        let building1Cost = 10;
-        let building2Cost = 20;
-        let building3Cost = 30;
+        let chips = 0;
+        let chipsPerSec = 0;
+        let manufacturingEfficiencyUpgradeCost = 50;
+        let manufacturingEfficiencyMultiplier = 1;
+        let plantCost = 10;
+        let lineCost = 20;
+        let centerCost = 30;
 
-        const gatherButton = document.getElementById('gather-btn');
-        const resourcesDisplay = document.getElementById('resources');
-        const resourcePerSecDisplay = document.getElementById('resource-per-sec');
-        const building1CostDisplay = document.getElementById('building1-cost');
-        const building2CostDisplay = document.getElementById('building2-cost');
-        const building3CostDisplay = document.getElementById('building3-cost');
+        const produceButton = document.getElementById('produce-btn');
+        const chipsDisplay = document.getElementById('chips');
+        const chipsPerSecDisplay = document.getElementById('chips-per-sec');
+        const plantCostDisplay = document.getElementById('plant-cost');
+        const lineCostDisplay = document.getElementById('line-cost');
+        const centerCostDisplay = document.getElementById('center-cost');
         const upgradeCostDisplay = document.getElementById('upgrade-cost');
 
-        // Function to update resources and resource per second
-        function updateResources() {
-            resources += resourcePerSec;
-            resourcesDisplay.textContent = resources.toFixed(2);
+        // Function to update chips and chips per second
+        function updateChips() {
+            chips += chipsPerSec;
+            chipsDisplay.textContent = chips.toFixed(2);
         }
 
-        // Function to update the resource per second display
-        function updateResourcePerSecDisplay() {
-            resourcePerSecDisplay.textContent = (resourcePerSec * resourceEfficiencyMultiplier).toFixed(2);
+        // Function to update the chips per second display
+        function updateChipsPerSecDisplay() {
+            chipsPerSecDisplay.textContent = (chipsPerSec * manufacturingEfficiencyMultiplier).toFixed(2);
         }
 
-        // Function to gather resources when the button is clicked
-        gatherButton.addEventListener('click', function() {
-            resources += resourceEfficiencyMultiplier;
-            resourcesDisplay.textContent = resources.toFixed(2);
+        // Function to produce chips when the button is clicked
+        produceButton.addEventListener('click', function() {
+            chips += manufacturingEfficiencyMultiplier;
+            chipsDisplay.textContent = chips.toFixed(2);
         });
 
-        // Function to automatically gather resources per second
-        function gatherResourcesPerSec() {
-            resources += resourcePerSec * resourceEfficiencyMultiplier;
-            resourcesDisplay.textContent = resources.toFixed(2);
+        // Function to automatically produce chips per second
+        function produceChipsPerSec() {
+            chips += chipsPerSec * manufacturingEfficiencyMultiplier;
+            chipsDisplay.textContent = chips.toFixed(2);
         }
 
-        // Start gathering resources per second
-        setInterval(gatherResourcesPerSec, 1000);
+        // Start producing chips per second
+        setInterval(produceChipsPerSec, 1000);
 
-        // Add a resource-producing building
-        function addBuilding(buildingType) {
-            let buildingCost;
-            switch (buildingType) {
+        // Add a chip manufacturing facility
+        function addFacility(facilityType) {
+            let facilityCost;
+            switch (facilityType) {
                 case 1:
-                    buildingCost = building1Cost;
+                    facilityCost = plantCost;
                     break;
                 case 2:
-                    buildingCost = building2Cost;
+                    facilityCost = lineCost;
                     break;
                 case 3:
-                    buildingCost = building3Cost;
+                    facilityCost = centerCost;
                     break;
                 default:
                     break;
             }
-            if (resources >= buildingCost) {
-                resources -= buildingCost;
-                switch (buildingType) {
+            if (chips >= facilityCost) {
+                chips -= facilityCost;
+                switch (facilityType) {
                     case 1:
-                        resourcePerSec += 1;
-                        building1Cost *= 2;
+                        chipsPerSec += 1;
+                        plantCost *= 2;
                         break;
                     case 2:
-                        resourcePerSec += 2;
-                        building2Cost *= 2;
+                        chipsPerSec += 2;
+                        lineCost *= 2;
                         break;
                     case 3:
-                        resourcePerSec += 3;
-                        building3Cost *= 2;
+                        chipsPerSec += 3;
+                        centerCost *= 2;
                         break;
                     default:
                         break;
                 }
-                updateResourcePerSecDisplay();
-                resourcesDisplay.textContent = resources.toFixed(2);
-                building1CostDisplay.textContent = building1Cost;
-                building2CostDisplay.textContent = building2Cost;
-                building3CostDisplay.textContent = building3Cost;
+                updateChipsPerSecDisplay();
+                chipsDisplay.textContent = chips.toFixed(2);
+                plantCostDisplay.textContent = plantCost;
+                lineCostDisplay.textContent = lineCost;
+                centerCostDisplay.textContent = centerCost;
             } else {
-                alert('Not enough resources!');
+                alert('Not enough chips!');
             }
         }
 
-        // Function to buy a building when the button is clicked
-        document.getElementById('buy-building1-btn').addEventListener('click', () => addBuilding(1));
-        document.getElementById('buy-building2-btn').addEventListener('click', () => addBuilding(2));
-        document.getElementById('buy-building3-btn').addEventListener('click', () => addBuilding(3));
+        // Function to buy a manufacturing facility when the button is clicked
+        document.getElementById('buy-plant-btn').addEventListener('click', () => addFacility(1));
+        document.getElementById('buy-line-btn').addEventListener('click', () => addFacility(2));
+        document.getElementById('buy-center-btn').addEventListener('click', () => addFacility(3));
 
-        // Function to upgrade resource production efficiency
+        // Function to upgrade manufacturing efficiency
         document.getElementById('upgrade-btn').addEventListener('click', function() {
-            if (resources >= resourceEfficiencyUpgradeCost) {
-                resources -= resourceEfficiencyUpgradeCost;
-                resourceEfficiencyMultiplier *= 2;
-                updateResourcePerSecDisplay();
-                resourcesDisplay.textContent = resources.toFixed(2);
-                upgradeCostDisplay.textContent = resourceEfficiencyUpgradeCost *= 2;
+            if (chips >= manufacturingEfficiencyUpgradeCost) {
+                chips -= manufacturingEfficiencyUpgradeCost;
+                manufacturingEfficiencyMultiplier *= 2;
+                updateChipsPerSecDisplay();
+                chipsDisplay.textContent = chips.toFixed(2);
+                upgradeCostDisplay.textContent = manufacturingEfficiencyUpgradeCost *= 2;
             } else {
-                alert('Not enough resources to upgrade!');
+                alert('Not enough chips to upgrade!');
             }
         });
     </script>
