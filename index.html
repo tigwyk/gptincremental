@@ -104,6 +104,7 @@
     <h2>Upgrades</h2>
     <p>Upgrade Cost: <span id="upgrade-cost">50</span> Credits</p>
     <button id="upgrade-btn">Upgrade Manufacturing Efficiency</button>
+    <button id="auto-sell-btn">Purchase Auto-sell Upgrade (Cost: 100 Credits)</button>
 
     <div id="auto-sell-checkbox-container">
         <input type="checkbox" id="auto-sell-checkbox">
@@ -161,6 +162,7 @@
         const autoSellCheckbox = document.getElementById('auto-sell-checkbox');
         const statusBar = document.getElementById('status-bar');
         const clearStorageButton = document.getElementById('clear-storage-btn');
+        const autoSellUpgradeButton = document.getElementById('auto-sell-btn');
         const buyShopButton = document.getElementById('buy-shop-btn');
         const buyBigShopButton = document.getElementById('buy-big-shop-btn');
         const toastContainer = document.getElementById('toast-container');
@@ -343,8 +345,20 @@
             }
         });
 
+        // Function to purchase auto-sell upgrade
+        autoSellUpgradeButton.addEventListener('click', function() {
+            if (credits >= 100) {
+                credits -= 100;
+                autoSellEnabled = true;
+                autoSellCheckboxContainer.style.display = 'block';
+                updateDisplay();
+            } else {
+                showToast('Not enough credits to purchase auto-sell upgrade!');
+            }
+        });
+
         // Function to enable/disable auto-selling of chips
-        document.getElementById('auto-sell-checkbox').addEventListener('change', function() {
+        autoSellCheckbox.addEventListener('change', function() {
             autoSellEnabled = this.checked;
             updateDisplay();
         });
@@ -384,8 +398,7 @@
 
         // Check if auto-sell upgrade is purchased, then show checkbox
         if (autoSellEnabled) {
-            autoSellCheckbox.checked = true;
-            autoSellCheckbox.disabled = false;
+            autoSellCheckboxContainer.style.display = 'block';
         }
 
     </script>
