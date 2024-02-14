@@ -222,8 +222,9 @@
             chips += chipsPerSec * manufacturingEfficiencyMultiplier;
             chipsDisplay.textContent = chips.toFixed(2);
             if (autoSellEnabled && chips >= 1) {
-                chips -= 1;
-                credits += 1;
+                const soldChips = Math.min(chips, sellingRate);
+                chips -= soldChips;
+                credits += soldChips;
                 chipsDisplay.textContent = chips.toFixed(2);
                 creditsDisplay.textContent = credits.toFixed(2);
             }
