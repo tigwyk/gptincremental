@@ -67,6 +67,7 @@
     <h2>Upgrades</h2>
     <p>Upgrade Cost: <span id="upgrade-cost">50</span> Credits</p>
     <button id="upgrade-btn">Upgrade Manufacturing Efficiency</button>
+    <button id="auto-sell-btn">Auto-sell Chips (Cost: 100 Credits)</button>
 
     <div id="status-bar"></div>
 
@@ -80,6 +81,7 @@
         let lineCost = 20;
         let centerCost = 30;
         let productionInterval;
+        let autoSellEnabled = false;
 
         // Load saved data from local storage
         const savedData = localStorage.getItem('chipGameSave');
@@ -93,6 +95,7 @@
             lineCost = parsedData.lineCost;
             centerCost = parsedData.centerCost;
             manufacturingEfficiencyUpgradeCost = parsedData.manufacturingEfficiencyUpgradeCost;
+            autoSellEnabled = parsedData.autoSellEnabled;
             updateDisplay();
         }
 
@@ -105,6 +108,7 @@
         const lineCostDisplay = document.getElementById('line-cost');
         const centerCostDisplay = document.getElementById('center-cost');
         const upgradeCostDisplay = document.getElementById('upgrade-cost');
+        const autoSellButton = document.getElementById('auto-sell-btn');
         const statusBar = document.getElementById('status-bar');
         const clearStorageButton = document.getElementById('clear-storage-btn');
 
@@ -117,6 +121,7 @@
             lineCostDisplay.textContent = lineCost;
             centerCostDisplay.textContent = centerCost;
             upgradeCostDisplay.textContent = manufacturingEfficiencyUpgradeCost;
+            autoSellButton.textContent = `Auto-sell Chips (Cost: 100 Credits) - ${autoSellEnabled ? 'Enabled' : 'Disabled'}`;
         }
 
         // Function to update chips and chips per second
@@ -135,7 +140,8 @@
                 plantCost,
                 lineCost,
                 centerCost,
-                manufacturingEfficiencyUpgradeCost
+                manufacturingEfficiencyUpgradeCost,
+                autoSellEnabled
             };
             localStorage.setItem('chipGameSave', JSON.stringify(gameData));
             statusBar.textContent = 'Autosaving...';
@@ -170,6 +176,12 @@
         function produceChipsPerSec() {
             chips += chipsPerSec * manufacturingEfficiencyMultiplier;
             chipsDisplay.textContent = chips.toFixed(2);
+            if (autoSellEnabled && chips >= 1) {
+                chips -= 1;
+                credits += 1;
+                chipsDisplay.textContent = chips.toFixed(2);
+                creditsDisplay.textContent = credits.toFixed(2);
+            }
         }
 
         // Start producing chips per second
@@ -230,6 +242,17 @@
                 updateDisplay();
             } else {
                 alert('Not enough credits to upgrade!');
+            }
+        });
+
+        // Function to enable/disable auto-selling of chips
+        autoSellButton.addEventListener('click', function() {
+            if (credits >= 100) {
+                credits -= 100;
+                autoSellEnabled = !autoSellEnabled;
+                updateDisplay();
+            } else {
+                alert('Not enough credits to purchase auto-sell upgrade!');
             }
         });
 
