@@ -105,9 +105,11 @@
     <p>Upgrade Cost: <span id="upgrade-cost">50</span> Credits</p>
     <button id="upgrade-btn">Upgrade Manufacturing Efficiency</button>
 
+    <button id="auto-sell-btn">Purchase Auto-sell Upgrade (Cost: 100 Credits)</button>
+
     <div id="auto-sell-checkbox-container">
         <input type="checkbox" id="auto-sell-checkbox">
-        <label for="auto-sell-checkbox">Auto-sell Chips (Cost: 100 Credits)</label>
+        <label for="auto-sell-checkbox">Auto-sell Chips</label>
     </div>
 
     <div id="toast-container"></div>
@@ -399,6 +401,11 @@
                 autoSellEnabled = false;
                 updateDisplay();
             }
+        });
+
+        // Function to purchase auto-sell upgrade
+        document.getElementById('auto-sell-btn').addEventListener('click', function() {
+            enableAutoSell();
         });
     </script>
 </body>
