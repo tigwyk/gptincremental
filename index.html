@@ -390,6 +390,16 @@
         if (autoSellEnabled) {
             autoSellCheckboxContainer.style.display = 'block';
         }
+
+        // Add event listener for enabling auto-sell
+        document.getElementById('auto-sell-checkbox').addEventListener('change', function() {
+            if (this.checked) {
+                enableAutoSell();
+            } else {
+                autoSellEnabled = false;
+                updateDisplay();
+            }
+        });
     </script>
 </body>
 </html>
