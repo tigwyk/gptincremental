@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incremental Idle Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Incremental Idle Game</h1>
+    <p>Click the button to gather resources!</p>
+    <p>Resources: <span id="resources">0</span></p>
+    <p>Resource per second: <span id="resource-per-sec">0</span></p>
+    <button id="gather-btn">Gather Resources</button>
+
+    <hr>
+
+    <h2>Buildings</h2>
+    <p>Building Type 1: Cost: <span id="building1-cost">10</span> Resources</p>
+    <p>Building Type 2: Cost: <span id="building2-cost">20</span> Resources</p>
+    <p>Building Type 3: Cost: <span id="building3-cost">30</span> Resources</p>
+    <button id="buy-building1-btn">Buy Building Type 1</button>
+    <button id="buy-building2-btn">Buy Building Type 2</button>
+    <button id="buy-building3-btn">Buy Building Type 3</button>
+
+    <hr>
+
+    <h2>Upgrades</h2>
+    <p>Upgrade Cost: <span id="upgrade-cost">50</span> Resources</p>
+    <button id="upgrade-btn">Upgrade Resource Production Efficiency</button>
+
+    <script>
+        let resources = 0;
+        let resourcePerSec = 0;
+        let resourceEfficiencyUpgradeCost = 50;
+        let resourceEfficiencyMultiplier = 1;
+        let building1Cost = 10;
+        let building2Cost = 20;
+        let building3Cost = 30;
+
+        const gatherButton = document.getElementById('gather-btn');
+        const resourcesDisplay = document.getElementById('resources');
+        const resourcePerSecDisplay = document.getElementById('resource-per-sec');
+        const building1CostDisplay = document.getElementById('building1-cost');
+        const building2CostDisplay = document.getElementById('building2-cost');
+        const building3CostDisplay = document.getElementById('building3-cost');
+        const upgradeCostDisplay = document.getElementById('upgrade-cost');
+
+        // Function to update resources and resource per second
+        function updateResources() {
+            resources += resourcePerSec;
+            resourcesDisplay.textContent = resources.toFixed(2);
+        }
+
+        // Function to update the resource per second display
+        function updateResourcePerSecDisplay() {
+            resourcePerSecDisplay.textContent = (resourcePerSec * resourceEfficiencyMultiplier).toFixed(2);
+        }
+
+        // Function to gather resources when the button is clicked
+        gatherButton.addEventListener('click', function() {
+            resources += resourceEfficiencyMultiplier;
+            resourcesDisplay.textContent = resources.toFixed(2);
+        });
+
+        // Function to automatically gather resources per second
+        function gatherResourcesPerSec() {
+            resources += resourcePerSec * resourceEfficiencyMultiplier;
+            resourcesDisplay.textContent = resources.toFixed(2);
+        }
+
+        // Start gathering resources per second
+        setInterval(gatherResourcesPerSec, 1000);
+
+        // Add a resource-producing building
+        function addBuilding(buildingType) {
+            let buildingCost;
+            switch (buildingType) {
+                case 1:
+                    buildingCost = building1Cost;
+                    break;
+                case 2:
+                    buildingCost = building2Cost;
+                    break;
+                case 3:
+                    buildingCost = building3Cost;
+                    break;
+                default:
+                    break;
+            }
+            if (resources >= buildingCost) {
+                resources -= buildingCost;
+                switch (buildingType) {
+                    case 1:
+                        resourcePerSec += 1;
+                        building1Cost *= 2;
+                        break;
+                    case 2:
+                        resourcePerSec += 2;
+                        building2Cost *= 2;
+                        break;
+                    case 3:
+                        resourcePerSec += 3;
+                        building3Cost *= 2;
+                        break;
+                    default:
+                        break;
+                }
+                updateResourcePerSecDisplay();
+                resourcesDisplay.textContent = resources.toFixed(2);
+                building1CostDisplay.textContent = building1Cost;
+                building2CostDisplay.textContent = building2Cost;
+                building3CostDisplay.textContent = building3Cost;
+            } else {
+                alert('Not enough resources!');
+            }
+        }
+
+        // Function to buy a building when the button is clicked
+        document.getElementById('buy-building1-btn').addEventListener('click', () => addBuilding(1));
+        document.getElementById('buy-building2-btn').addEventListener('click', () => addBuilding(2));
+        document.getElementById('buy-building3-btn').addEventListener('click', () => addBuilding(3));
+
+        // Function to upgrade resource production efficiency
+        document.getElementById('upgrade-btn').addEventListener('click', function() {
+            if (resources >= resourceEfficiencyUpgradeCost) {
+                resources -= resourceEfficiencyUpgradeCost;
+                resourceEfficiencyMultiplier *= 2;
+                updateResourcePerSecDisplay();
+                resourcesDisplay.textContent = resources.toFixed(2);
+                upgradeCostDisplay.textContent = resourceEfficiencyUpgradeCost *= 2;
+            } else {
+                alert('Not enough resources to upgrade!');
+            }
+        });
+    </script>
+</body>
+</html>
