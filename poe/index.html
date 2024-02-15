@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Path of Idle</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: auto;
+            background-color: #f9f9f9;
+        }
+
+        #container {
+            display: flex;
+            max-width: 1200px;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #sidebar {
+            flex: 1;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+
+        #main-content {
+            flex: 2;
+            padding: 20px;
+            border-left: 1px solid #ddd; /* Add border to separate upgrades from main content */
+        }
+
+        button {
+            margin-bottom: 10px;
+        }
+
+        .upgrade-buttons {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd; /* Add border to visually separate upgrade buttons section */
+        }
+
+        .upgrade-buttons button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="sidebar">
+            <h2>Player Information</h2>
+            <p>Click Damage: <span id="clickDamage">1</span></p>
+            <p>Resource Generation: <span id="resourceGeneration">0/s</span></p>
+            <p>Level: <span id="playerLevel">1</span></p>
+            <p>Experience: <span id="experience">0</span></p>
+            <h2>Upgrades</h2>
+            <p>Click Damage Upgrade Cost: <span id="clickDamageUpgradeCost">10</span></p>
+            <p>Resource Generation Upgrade Cost: <span id="resourceGenerationUpgradeCost">20</span></p>
+        </div>
+        <div id="main-content">
+            <h1>Path of Idle</h1>
+            <div>
+                <p>Orbs: <span id="resources">0</span></p>
+                <p>Monsters defeated: <span id="monstersDefeated">0</span></p>
+                <div id="monsterInfo"></div>
+            </div>
+            <button onclick="clickMonster()">Attack Monster</button>
+            <div class="upgrade-buttons">
+                <h2>Upgrades</h2>
+                <button onclick="upgrade('clickDamage')">Upgrade Click Damage (+1)</button>
+                <button onclick="upgrade('resourceGeneration')">Upgrade Resource Generation (+1/s)</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let resources = 0;
+        let monstersDefeated = 0;
+        let clickDamage = 1;
+        let resourceGeneration = 0;
+        let resourceGenerationInterval;
+        
+        let playerLevel = 1;
+        let experience = 0;
+        const experienceToNextLevel = 100; // Arbitrary value for demonstration
+        
+        const clickDamageUpgradeCost = 10;
+        const resourceGenerationUpgradeCost = 20;
+        
+        const monsters = [
+            { name: "Goblin", health: 10, reward: { orbs: 5, experience: 10 } },
+            { name: "Orc", health: 20, reward: { orbs: 10, experience: 20 } },
+            { name: "Dragon", health: 50, reward: { orbs: 25, experience: 50 } }
+        ];
+        
+        let currentMonster = getRandomMonster();
+        
+        function updateUI() {
+            document.getElementById('resources').innerText = resources;
+            document.getElementById('monstersDefeated').innerText = monstersDefeated;
+            document.getElementById('monsterInfo').innerHTML = `
+                <p>Monster Name: ${currentMonster.name}</p>
+                <p>Health: ${currentMonster.health}</p>
+            `;
+            document.getElementById('clickDamage').innerText = clickDamage;
+            document.getElementById('resourceGeneration').innerText = resourceGeneration + '/s';
+            document.getElementById('clickDamageUpgradeCost').innerText = clickDamageUpgradeCost;
+            document.getElementById('resourceGenerationUpgradeCost').innerText = resourceGenerationUpgradeCost;
+            document.getElementById('playerLevel').innerText = playerLevel;
+            document.getElementById('experience').innerText = experience;
+        }
+        
+        function clickMonster() {
+            if (currentMonster.health > 0) {
+                currentMonster.health -= clickDamage;
+                if (currentMonster.health <= 0) {
+                    resources += currentMonster.reward.orbs;
+                    experience += currentMonster.reward.experience;
+                    monstersDefeated++;
+                    currentMonster = getRandomMonster();
+                    checkLevelUp();
+                }
+                updateUI();
+            }
+        }
+        
+        function upgrade(type) {
+            if (type === 'clickDamage') {
+                if (resources >= clickDamageUpgradeCost) {
+                    resources -= clickDamageUpgradeCost;
+                    clickDamage++;
+                    updateUI();
+                } else {
+                    alert('Not enough orbs!');
+                }
+            } else if (type === 'resourceGeneration') {
+                if (resources >= resourceGenerationUpgradeCost) {
+                    resources -= resourceGenerationUpgradeCost;
+                    resourceGeneration++;
+                    clearInterval(resourceGenerationInterval);
+                    resourceGenerationInterval = setInterval(function() {
+                        resources += resourceGeneration;
+                        updateUI();
+                    }, 1000); // Resources generated every second
+                    updateUI();
+                } else {
+                    alert('Not enough orbs!');
+                }
+            }
+        }
+        
+        function getRandomMonster() {
+            const randomIndex = Math.floor(Math.random() * monsters.length);
+            // Create a new object to avoid modifying the original monster
+            return { ...monsters[randomIndex], health: monsters[randomIndex].health };
+        }
+        
+        function checkLevelUp() {
+            if (experience >= experienceToNextLevel) {
+                playerLevel++;
+                experience -= experienceToNextLevel;
+                experienceToNextLevel += 50; // Increase experience required for next level
+                checkLevelUp(); // Check for additional level ups
+            }
+        }
+        
+        // Initial UI update
+        updateUI();
+        </script>
+</body>
+</html>

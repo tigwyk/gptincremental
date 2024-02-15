@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Idle RPG Game</title>
+<style>
+/* CSS styles for better visual distinction */
+#heroList {
+  list-style: none;
+  padding: 0;
+}
+
+.heroItem {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 5px;
+  background-color: #f9f9f9;
+}
+
+.heroName {
+  font-weight: bold;
+}
+
+.heroStats {
+  margin-top: 5px;
+}
+
+.heroLoot {
+  margin-top: 5px;
+  font-style: italic;
+}
+
+#log {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 5px;
+  margin-top: 10px;
+}
+</style>
+</head>
+<body>
+<h1>Idle RPG Game</h1>
+<button id="runDungeonBtn">Run Dungeon</button>
+<div id="log"></div>
+
+<div id="heroStats">
+  <h2>Guild Members</h2>
+  <ul id="heroList"></ul>
+</div>
+
+<div id="dungeonStats">
+  <h2>Dungeon</h2>
+  <p id="dungeonName"></p>
+  <h3>Monsters</h3>
+  <ul id="monsterList"></ul>
+</div>
+
+<script>
+class Hero {
+  constructor(name, stats) {
+    this.name = name;
+    this.stats = stats;
+    this.health = 100; // Initial health
+    this.inventory = [];
+    this.equipment = {
+      head: null,
+      shoulders: null,
+      chest: null,
+      legs: null,
+      feet: null,
+      hands: null,
+      mainHand: null,
+      offHand: null,
+      trinket1: null,
+      trinket2: null,
+    };
+    this.resting = false; // Initially not resting
+  }
+
+  upgradeStats(stat, value) {
+    this.stats[stat] += value;
+  }
+
+  acquireItem(item) {
+    this.inventory.push(item);
+    this.updateEquipment();
+  }
+
+  equipItem(item) {
+    if (this.canEquip(item)) {
+      this.inventory.splice(this.inventory.indexOf(item), 1);
+      this.inventory.push(this.equipment[item.slot]);
+      this.equipment[item.slot] = item;
+      this.updateEquipment();
+    } else {
+      console.log(`Cannot equip ${item.name}`);
+    }
+  }
+
+  unequipItem(slot) {
+    const item = this.equipment[slot];
+    if (item) {
+      this.equipment[slot] = null;
+      this.inventory.push(item);
+      this.updateEquipment();
+    }
+  }
+
+  canEquip(item) {
+    if (item.slot === "mainHand" && this.equipment.offHand) {
+      return false;
+    } else if (item.slot === "offHand" && this.equipment.mainHand) {
+      return false;
+    }
+    return true;
+  }
+
+  updateEquipment() {
+    for (let slot in this.equipment) {
+      if (this.equipment[slot]) {
+        for (let stat in this.equipment[slot].stats) {
+          this.stats[stat] += this.equipment[slot].stats[stat];
+        }
+      }
+    }
+  }
+
+  fightMonster(monster) {
+    if (!this.resting) {
+      const heroPower = this.stats.strength + this.stats.agility;
+      const monsterPower = monster.power;
+      const damage = monsterPower - heroPower;
+      
+      if (damage > 0) {
+        this.health -= damage;
+        if (this.health <= 0) {
+          this.health = 0;
+          this.resting = true;
+          setTimeout(() => {
+            this.resting = false;
+            this.health = 100; // Reset health after resting
+            updateHeroStats();
+          }, 30000); // 30 seconds resting time
+        }
+      }
+
+      // Acquire loot if the hero wins the fight
+      if (damage <= 0) {
+        monster.loot.forEach(lootItem => {
+          this.acquireItem(lootItem);
+        });
+      }
+      
+      log(`${this.name} fought ${monster.name}!`);
+    } else {
+      log(`${this.name} is resting and cannot fight!`);
+    }
+  }
+}
+
+class Guild {
+  constructor() {
+    this.members = [];
+  }
+
+  addMember(hero) {
+    this.members.push(hero);
+  }
+
+  upgradeAllMembers(stat, value) {
+    this.members.forEach(member => {
+      member.upgradeStats(stat, value);
+    });
+  }
+}
+
+class Dungeon {
+  constructor(name, monsters) {
+    this.name = name;
+    this.monsters = monsters;
+  }
+
+  runDungeon(heroes) {
+    const randomMonsterIndex = Math.floor(Math.random() * this.monsters.length);
+    const randomMonster = this.monsters[randomMonsterIndex];
+    
+    document.getElementById('dungeonName').textContent = this.name;
+    
+    const monsterList = document.getElementById('monsterList');
+    monsterList.innerHTML = '';
+    
+    const listItem = document.createElement('li');
+    listItem.textContent = `${randomMonster.name} - Power: ${randomMonster.power}`;
+    monsterList.appendChild(listItem);
+    
+    heroes.forEach(hero => {
+      hero.fightMonster(randomMonster);
+    });
+    
+    updateHeroStats();
+  }
+}
+
+const guild = new Guild();
+
+const hero1 = new Hero("Hero1", { strength: 10, agility: 5 });
+const hero2 = new Hero("Hero2", { strength: 8, agility: 7 });
+
+guild.addMember(hero1);
+guild.addMember(hero2);
+
+const dungeon = new Dungeon("Example Dungeon", [
+  { name: "Monster1", power: 15, loot: [{ name: "Sword", ilvl: 10, slot: "mainHand", stats: { strength: 5 } }] },
+  { name: "Monster2", power: 20, loot: [{ name: "Shield", ilvl: 15, slot: "offHand", stats: { agility: 5 } }] }
+]);
+
+function runGameLoop() {
+  guild.upgradeAllMembers("strength", 2);
+  dungeon.runDungeon(guild.members);
+}
+
+document.getElementById('runDungeonBtn').addEventListener('click', runGameLoop);
+
+setInterval(runGameLoop, 10000);
+
+function updateHeroStats() {
+  const heroList = document.getElementById('heroList');
+  heroList.innerHTML = ''; // Clear existing list
+  
+  guild.members.forEach(hero => {
+    const listItem = document.createElement('li');
+    listItem.classList.add('heroItem');
+    
+    const heroName = document.createElement('div');
+    heroName.classList.add('heroName');
+    heroName.textContent = hero.name;
+    listItem.appendChild(heroName);
+    
+    const heroStats = document.createElement('div');
+    heroStats.classList.add('heroStats');
+    heroStats.textContent = `Strength: ${hero.stats.strength}, Agility: ${hero.stats.agility}, Health: ${hero.health}`;
+    listItem.appendChild(heroStats);
+    
+    const heroEquipment = document.createElement('div');
+    heroEquipment.classList.add('heroLoot');
+    for (let slot in hero.equipment) {
+      if (hero.equipment[slot]) {
+        const equippedItem = document.createElement('div');
+        equippedItem.textContent = `${slot}: ${hero.equipment[slot].name} (ilvl ${hero.equipment[slot].ilvl})`;
+        heroEquipment.appendChild(equippedItem);
+      }
+    }
+    listItem.appendChild(heroEquipment);
+    
+    const heroInventory = document.createElement('div');
+    heroInventory.classList.add('heroLoot');
+    heroInventory.textContent = `Inventory: ${hero.inventory.map(item => `${item.name} (ilvl ${item.ilvl})`).join(', ')}`;
+    listItem.appendChild(heroInventory);
+    
+    heroList.appendChild(listItem);
+  });
+}
+
+function log(message) {
+  const logDiv = document.getElementById('log');
+  const logMessage = document.createElement('div');
+  logMessage.textContent = message;
+  logDiv.insertBefore(logMessage, logDiv.firstChild);
+  if (logDiv.children.length > 10) { // Limit log messages to 10
+    logDiv.removeChild(logDiv.lastChild);
+  }
+}
+
+updateHeroStats(); // Initial update when the page loads
+</script>
+
+</body>
+</html>

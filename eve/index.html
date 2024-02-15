@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EVE Online Idle Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    
+    .tabcontent {
+      display: none;
+    }
+    
+    button {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>EVE Online Idle Game</h1>
+  
+  <div class="tab">
+    <button class="tablinks" onclick="openTab(event, 'Mining')">Mining</button>
+    <button class="tablinks" onclick="openTab(event, 'Trading')">Trading</button>
+    <button class="tablinks" onclick="openTab(event, 'Upgrades')">Upgrades</button>
+    <button class="tablinks" onclick="openTab(event, 'Combat')">Combat</button>
+  </div>
+
+  <div id="Mining" class="tabcontent">
+    <h2>Mining</h2>
+    <p>Resources:</p>
+    <p>Minerals: <span id="minerals">0</span></p>
+    <p>Isotopes: <span id="isotopes">0</span></p>
+    <p>Salvage: <span id="salvage">0</span></p>
+    <button onclick="mine()">Mine Resources</button>
+  </div>
+
+  <div id="Trading" class="tabcontent">
+    <h2>Trading</h2>
+    <p>ISK: <span id="isk">0</span></p>
+    <button onclick="trade()">Trade Resources for ISK</button>
+  </div>
+
+  <div id="Upgrades" class="tabcontent">
+    <h2>Upgrades</h2>
+    <p>Ship: <span id="ship">Rookie Ship</span></p>
+    <button onclick="upgradeShip()">Upgrade Ship</button>
+  </div>
+
+  <div id="Combat" class="tabcontent">
+    <h2>Combat</h2>
+    <button onclick="engageInCombat()">Engage in Combat</button>
+  </div>
+
+  <script>
+    function openTab(evt, tabName) {
+      var i, tabcontent, tablinks;
+      tabcontent = document.getElementsByClassName("tabcontent");
+      for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+      tablinks = document.getElementsByClassName("tablinks");
+      for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+      }
+      document.getElementById(tabName).style.display = "block";
+      evt.currentTarget.className += " active";
+    }
+
+    // Define initial resources
+    let minerals = 0;
+    let isotopes = 0;
+    let salvage = 0;
+    let isk = 0;
+
+    // Define initial ship stats
+    let ship = {
+      name: "Rookie Ship",
+      attack: 1,
+      defense: 1,
+      speed: 1
+    };
+
+    // Function to mine resources
+    function mine() {
+      minerals += 10;
+      isotopes += 5;
+      salvage += 2;
+      updateDisplay();
+    }
+
+    // Function to trade resources for ISK
+    function trade() {
+      if (minerals >= 100 && isotopes >= 50 && salvage >= 20) {
+        minerals -= 100;
+        isotopes -= 50;
+        salvage -= 20;
+        isk += 200;
+        updateDisplay();
+      } else {
+        alert("Not enough resources to trade!");
+      }
+    }
+
+    // Function to upgrade ship
+    function upgradeShip() {
+      if (isk >= 1000) {
+        isk -= 1000;
+        ship.attack += 1;
+        ship.defense += 1;
+        ship.speed += 1;
+        document.getElementById("ship").textContent = JSON.stringify(ship);
+        alert("Ship upgraded!");
+      } else {
+        alert("Not enough ISK to upgrade ship!");
+      }
+    }
+
+    // Function to simulate combat
+    function engageInCombat() {
+      // Simulate combat mechanics (simplified for example)
+      const enemy = {
+        name: "Enemy Ship",
+        attack: 2,
+        defense: 2,
+        speed: 2
+      };
+
+      const playerTotalStats = ship.attack + ship.defense + ship.speed;
+      const enemyTotalStats = enemy.attack + enemy.defense + enemy.speed;
+
+      if (playerTotalStats > enemyTotalStats) {
+        alert("Victory! Loot gained.");
+        isk += 500;
+        updateDisplay();
+      } else if (playerTotalStats < enemyTotalStats) {
+        alert("Defeat! Ship destroyed.");
+        ship = {
+          name: "Rookie Ship",
+          attack: 1,
+          defense: 1,
+          speed: 1
+        };
+        document.getElementById("ship").textContent = JSON.stringify(ship);
+        updateDisplay();
+      } else {
+        alert("Draw! No loot gained.");
+      }
+    }
+
+    // Function to update display
+    function updateDisplay() {
+      document.getElementById("minerals").textContent = minerals;
+      document.getElementById("isotopes").textContent = isotopes;
+      document.getElementById("salvage").textContent = salvage;
+      document.getElementById("isk").textContent = isk;
+      document.getElementById("ship").textContent = JSON.stringify(ship);
+    }
+  </script>
+</body>
+</html>
